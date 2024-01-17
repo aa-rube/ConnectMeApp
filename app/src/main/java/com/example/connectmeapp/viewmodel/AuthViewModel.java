@@ -1,100 +1,91 @@
 package com.example.connectmeapp.viewmodel;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 
 import com.example.connectmeapp.model.ApiService;
-import com.example.connectmeapp.model.EncryptionUtils;
-import com.example.connectmeapp.services.MyApiClient;
 
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class AuthViewModel extends ViewModel {
-    private final ApiService apiService;
-    private MutableLiveData<Boolean> authenticationResult = new MutableLiveData<>();
-    private MutableLiveData<String> errorMessage = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> authResult = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> initResult = new MutableLiveData<>();
+    private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
+    private String key = "";
 
-    public AuthViewModel() {
-        apiService = MyApiClient.getApiClient().create(ApiService.class);
-    }
-
-    public void authenticate(String email, String password) {
-        if (init()) {
-            System.out.println("Let's go!");
-            return;
-        }
-
-        Call<Map<String, Boolean>> call = apiService.auth(EncryptionUtils.encrypt(email, password));
-        call.enqueue(new Callback<Map<String, Boolean>>() {
+    public void authenticate(ApiService apiService, String email) {
+        Call<Map<String, Boolean>> call = apiService.auth(email);
+        call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<Map<String, Boolean>> call,
-                                   Response<Map<String, Boolean>> response) {
+            public void onResponse(@NonNull Call<Map<String, Boolean>> call,
+                                   @NonNull Response<Map<String, Boolean>> response) {
+
                 if (response.isSuccessful()) {
                     Map<String, Boolean> result = response.body();
+                    if (result != null && result.get("result") != null
+                            && !result.get("result").equals(false)) {
 
-                    if (result != null
-                            && result.get("result") != null
-                            && Boolean.TRUE.equals(result.get("result"))) {
-
-                        authenticationResult.setValue(true);
+                        authResult.setValue(true);
                     } else {
-                        authenticationResult.setValue(false);
+                        errorMessage.setValue("Try again");
                     }
+
                 } else {
-                    authenticationResult.setValue(true);
+                    authResult.setValue(false);
                     errorMessage.setValue("Try again");
                 }
             }
 
             @Override
-            public void onFailure(Call<Map<String, Boolean>> call, Throwable t) {
+            public void onFailure(@NonNull Call<Map<String, Boolean>> call, @NonNull Throwable t) {
+                authResult.setValue(false);
                 errorMessage.setValue("Trouble with connection. Try again.");
             }
         });
     }
 
-    private boolean init() {
-        System.out.println("oisdssmvsvlkmfvlkmsvlkmsfkvmkds");
-        AtomicBoolean success = new AtomicBoolean();
-        Call<Map<String, Boolean>> call = apiService.init();
-        call.enqueue(new Callback<Map<String, Boolean>>() {
-
+    public void init(ApiService apiService, String cryptoAuth) {
+        Call<Map<String, String>> call = apiService.init(cryptoAuth);
+        call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<Map<String, Boolean>> call,
-                                   Response<Map<String, Boolean>> response) {
+            public void onResponse(@NonNull Call<Map<String, String>> call,
+                                   @NonNull Response<Map<String, String>> response) {
+
                 if (response.isSuccessful()) {
-                    Map<String, Boolean> result = response.body();
-
-                    if (result != null && result.get("result") != null
-                            && Boolean.TRUE.equals(result.get("result"))) {
-                        success.set(true);
-                    } else {
-                        success.set(false);
-                    }
-
+                    Map<String, String> result = response.body();
+                    if (result == null) return;
+                    
+                    key = result.get("result");
+                    initResult.setValue(!Objects.equals(result.get("result"), "false"));
                 } else {
-                    success.set(false);
+                    initResult.setValue(false);
+                    errorMessage.setValue("Try again");
                 }
             }
 
             @Override
-            public void onFailure(Call<Map<String, Boolean>> call, Throwable t) {
-                success.set(false);
+            public void onFailure(@NonNull Call<Map<String, String>> call,
+                                  @NonNull Throwable t) {
+                initResult.setValue(false);
+                errorMessage.setValue("Trouble with connection. Try again.");
             }
         });
-
-        return success.get();
     }
 
-    public LiveData<Boolean> getAuthenticationResult() {
-        return authenticationResult;
+    public LiveData<Boolean> getInitResult() {
+        return initResult;
+    }
+
+    public LiveData<Boolean> getAuthResult() {
+        return authResult;
     }
 
     public LiveData<String> getErrorMessage() {

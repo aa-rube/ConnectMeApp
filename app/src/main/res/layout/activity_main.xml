@@ -13,43 +13,42 @@
         android:layout_centerInParent="true"
         android:textSize="25sp"/>
 
-    <EditText
-        android:id="@+id/email_in"
+
+
+
+    <EditText android:id="@+id/email_in"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="400dp"
-        android:layout_marginLeft="50dp"
+        android:layout_marginStart="50dp"
         android:gravity="center"
         android:hint="your email"
         android:inputType="text|textMultiLine" />
 
-    <EditText
-        android:id="@+id/pass_in"
+    <EditText android:id="@+id/pass_in"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/email_in"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="50dp"
+        android:layout_marginTop="400dp"
+        android:layout_marginStart="50dp"
         android:gravity="center"
-        android:hint="your pass"
+        android:hint="We sent code to email. input here."
         android:inputType="text|textMultiLine" />
 
-    <Button
-        android:id="@+id/approve_email"
+
+
+
+    <Button android:id="@+id/approve_email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/email_in"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="280dp"
+        android:layout_marginTop="400dp"
+        android:layout_marginStart="280dp"
         android:text=">" />
 
-    <Button
-        android:id="@+id/approve_pass"
+    <Button android:id="@+id/approve_pass"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/pass_in"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="280dp"
+        android:layout_marginTop="400dp"
+        android:layout_marginStart="280dp"
         android:text=">" />
 
 </RelativeLayout>

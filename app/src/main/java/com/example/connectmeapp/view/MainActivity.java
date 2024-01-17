@@ -12,18 +12,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 
+import com.example.connectmeapp.model.ApiService;
+import com.example.connectmeapp.model.CryptoKey;
+import com.example.connectmeapp.services.MyApiClient;
 import com.example.connectmeapp.viewmodel.AuthViewModel;
 
 
 public class MainActivity extends AppCompatActivity {
     private AuthViewModel authViewModel;
+    private final ApiService apiService = MyApiClient.getApiClient().create(ApiService.class);;
     private String userEmail;
     private TextView greeting;
     private EditText inputEmail;
-    private EditText inputPass;
+    private EditText inputCode;
     private Button approveEmail;
-    private Button approvePass;
-
+    private Button approveCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,9 +36,9 @@ public class MainActivity extends AppCompatActivity {
 
         greeting = findViewById(R.id.greeting);
         inputEmail = findViewById(R.id.email_in);
-        inputPass = findViewById(R.id.pass_in);
+        inputCode = findViewById(R.id.pass_in);
         approveEmail = findViewById(R.id.approve_email);
-        approvePass = findViewById(R.id.approve_pass);
+        approveCode = findViewById(R.id.approve_pass);
 
         hideAll();
 
@@ -46,22 +49,22 @@ public class MainActivity extends AppCompatActivity {
 
         approveEmail.setOnClickListener(view -> {
             if (inputEmail.getText().toString().contains("@")) {
-                showInputPassword();
                 userEmail = inputEmail.getText().toString();
+                authViewModel.authenticate(apiService, userEmail);
+                showInputCode();
             }
         });
 
-        approvePass.setOnClickListener(view -> {
-            hideInputPassword();
-            authViewModel.authenticate(userEmail, inputPass.getText().toString());
+        approveCode.setOnClickListener(view -> {
+            hideInputCode();
+            authViewModel.init(apiService, CryptoKey.fullKey(userEmail, inputCode.getText().toString()));
         });
 
         observeViewModel();
     }
 
-
     private void observeViewModel() {
-        authViewModel.getAuthenticationResult().observe(this, result -> {
+        authViewModel.getInitResult().observe(this, result -> {
             if (result.equals(true)) {
                 showGreeting("Welcome!");
             } else {
@@ -69,9 +72,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        authViewModel.getErrorMessage().observe(this, errorMessage -> {
-            showGreeting("Trouble with connection. Try again.");
+        authViewModel.getAuthResult().observe(this, result -> {
+            if (result.equals(false)) {
+
+                authViewModel.getErrorMessage().observe(this, errorMessage -> {
+                    showGreeting("Trouble with connection. Try again.");
+                });
+
+            } else {
+                showGreeting("move on...");
+            }
         });
+
     }
 
     private void showInputEmail() {
@@ -96,15 +108,15 @@ public class MainActivity extends AppCompatActivity {
         imm.showSoftInput(inputEmail, InputMethodManager.SHOW_IMPLICIT);
     }
 
-    private void showInputPassword() {
+    private void showInputCode() {
         inputEmail.setVisibility(View.GONE);
         approveEmail.setVisibility(View.GONE);
 
-        inputPass = findViewById(R.id.pass_in);
-        inputPass.setVisibility(View.VISIBLE);
+        inputCode = findViewById(R.id.pass_in);
+        inputCode.setVisibility(View.VISIBLE);
 
-        approvePass = findViewById(R.id.approve_pass);
-        approvePass.setVisibility(View.VISIBLE);
+        approveCode = findViewById(R.id.approve_pass);
+        approveCode.setVisibility(View.VISIBLE);
 
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(inputEmail, InputMethodManager.SHOW_IMPLICIT);
@@ -113,8 +125,8 @@ public class MainActivity extends AppCompatActivity {
     private void hideAll() {
         inputEmail.setVisibility(View.GONE);
         approveEmail.setVisibility(View.GONE);
-        inputPass.setVisibility(View.GONE);
-        approvePass.setVisibility(View.GONE);
+        inputCode.setVisibility(View.GONE);
+        approveCode.setVisibility(View.GONE);
 
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(inputEmail.getWindowToken(), 0);
@@ -122,14 +134,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void hideGreeting() {
         greeting.setVisibility(View.GONE);
-        approvePass.setVisibility(View.GONE);
+        approveCode.setVisibility(View.GONE);
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(inputEmail.getWindowToken(), 0);
     }
 
-    private void hideInputPassword() {
-        inputPass.setVisibility(View.GONE);
-        approvePass.setVisibility(View.GONE);
+    private void hideInputCode() {
+        inputCode.setVisibility(View.GONE);
+        approveCode.setVisibility(View.GONE);
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(inputEmail.getWindowToken(), 0);
     }
