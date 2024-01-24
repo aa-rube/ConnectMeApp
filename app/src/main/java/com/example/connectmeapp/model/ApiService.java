@@ -9,7 +9,7 @@ import retrofit2.http.Query;
 
 public interface ApiService {
     @GET("/init")
-    Call<Map<String, String>> init(@Query("authSecure") String authCrypto);
+    Call<Map<String, Boolean>> init(@Query("authSecure") String authCrypto);
 
     @POST("/auth")
     Call<Map<String, Boolean>> auth(@Query("email") String email);

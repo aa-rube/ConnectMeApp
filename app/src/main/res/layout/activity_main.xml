@@ -34,6 +34,15 @@
         android:hint="We sent code to email. input here."
         android:inputType="text|textMultiLine" />
 
+    <EditText android:id="@+id/name_in"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="400dp"
+        android:layout_marginStart="50dp"
+        android:gravity="center"
+        android:hint="Input name for your acc"
+        android:inputType="text|textMultiLine" />
+
 
 
 
@@ -50,5 +59,12 @@
         android:layout_marginTop="400dp"
         android:layout_marginStart="280dp"
         android:text=">" />
+
+    <Button android:id="@+id/approve_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="400dp"
+        android:layout_marginStart="280dp"
+        android:text=">>>" />
 
 </RelativeLayout>

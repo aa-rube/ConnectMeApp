@@ -18,8 +18,8 @@ import retrofit2.Response;
 public class AuthViewModel extends ViewModel {
     private final MutableLiveData<Boolean> authResult = new MutableLiveData<>();
     private final MutableLiveData<Boolean> initResult = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> createAccResult = new MutableLiveData<>();
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
-    private String key = "";
 
     public void authenticate(ApiService apiService, String email) {
         Call<Map<String, Boolean>> call = apiService.auth(email);
@@ -30,11 +30,10 @@ public class AuthViewModel extends ViewModel {
 
                 if (response.isSuccessful()) {
                     Map<String, Boolean> result = response.body();
-                    if (result != null && result.get("result") != null
-                            && !result.get("result").equals(false)) {
-
+                    if (result != null && Boolean.TRUE.equals(result.get(email))) {
                         authResult.setValue(true);
                     } else {
+                        authResult.setValue(false);
                         errorMessage.setValue("Try again");
                     }
 
@@ -53,17 +52,16 @@ public class AuthViewModel extends ViewModel {
     }
 
     public void init(ApiService apiService, String cryptoAuth) {
-        Call<Map<String, String>> call = apiService.init(cryptoAuth);
+        Call<Map<String, Boolean>> call = apiService.init(cryptoAuth);
         call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(@NonNull Call<Map<String, String>> call,
-                                   @NonNull Response<Map<String, String>> response) {
+            public void onResponse(@NonNull Call<Map<String, Boolean>> call,
+                                   @NonNull Response<Map<String, Boolean>> response) {
 
                 if (response.isSuccessful()) {
-                    Map<String, String> result = response.body();
+                    Map<String, Boolean> result = response.body();
                     if (result == null) return;
-                    
-                    key = result.get("result");
+
                     initResult.setValue(!Objects.equals(result.get("result"), "false"));
                 } else {
                     initResult.setValue(false);
@@ -72,10 +70,33 @@ public class AuthViewModel extends ViewModel {
             }
 
             @Override
-            public void onFailure(@NonNull Call<Map<String, String>> call,
+            public void onFailure(@NonNull Call<Map<String, Boolean>> call,
                                   @NonNull Throwable t) {
                 initResult.setValue(false);
-                errorMessage.setValue("Trouble with connection. Try again.");
+                errorMessage.setValue("Trouble with init. Try again.");
+            }
+        });
+    }
+
+    public void createAccount(ApiService api, String email, String userName) {
+        Call<Map<String,Boolean>> call = api.createNewAccount(email, userName);
+        call.enqueue(new  Callback<>(){
+
+            @Override
+            public void onResponse(@NonNull Call<Map<String, Boolean>> call,
+                                   @NonNull Response<Map<String, Boolean>> response) {
+                if (response.isSuccessful()){
+                    Map<String,Boolean> result = response.body();
+                    createAccResult.setValue(Objects.requireNonNull(result).get("result"));
+                } else {
+                    createAccResult.setValue(false);
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<Map<String, Boolean>> call, Throwable t) {
+                createAccResult.setValue(false);
             }
         });
     }
@@ -86,6 +107,10 @@ public class AuthViewModel extends ViewModel {
 
     public LiveData<Boolean> getAuthResult() {
         return authResult;
+    }
+
+    public MutableLiveData<Boolean> getCreateAccResult() {
+        return createAccResult;
     }
 
     public LiveData<String> getErrorMessage() {
