@@ -1,3 +1,18 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">ConnectMe</string>
+    <string name="email">your email</string>
+    <string name="email_exist">we find your email</string>
+    <string name="input_code">input code here</string>
+    <string name="input_name">input your nickname</string>
+    <string name="reg">create new acc</string>
+    <string name="success">Yahoooooo! Welcome!</string>
+
+
+
+    <string name="next">next</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="greeting">"Welcome "</string>
+
+    <string name="login_failed">"Login failed"</string>
+
 </resources>

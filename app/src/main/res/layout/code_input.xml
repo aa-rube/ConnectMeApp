@@ -4,16 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.auth.MainActivity">
+    tools:context=".view.auth.EmailCodeInput">
 
     <EditText
-        android:id="@+id/email_in"
+        android:id="@+id/code_in"
         android:layout_width="342dp"
         android:layout_height="56dp"
         android:layout_marginTop="256dp"
         android:ems="10"
         android:fontFamily="serif"
-        android:hint="@string/email"
+        android:hint="@string/input_code"
         android:inputType="textEmailAddress"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.492"
@@ -22,12 +22,12 @@
         android:autofillHints="" />
 
     <TextView
-        android:id="@+id/greeting"
+        android:id="@+id/find_email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
         android:fontFamily="serif"
-        android:text="@string/greeting"
+        android:text="@string/email_exist"
         android:textSize="35sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
@@ -35,7 +35,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/approve_email"
+        android:id="@+id/approve_pass"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
